@@ -1,6 +1,6 @@
 # ------------------------- 博客基本信息 -------------------------
 # 网站标题
-title: Sitoi
+title: 事了拂身去 深藏功与名
 # 打字效果副标题. 如果有符号 ‘ ，请在 ’ 前面加上 \
 subtitle:
   enable: true
@@ -16,14 +16,14 @@ description: 博客模版项目
 # 网站关键词，便于 SEO 搜索
 keywords: 博客 模版
 # 网站作者
-author: Sitoi
+author: zhsong
 # 网站语言
 language: zh-CN
 # 网站时区
 timezone: Asia/Shanghai
 
 # 博客 URL 配置，网站地址设置 对应 CNAME 文件
-url: https://crawlmkt.github.io
+url: https://zhsongdanc.github.io
 # 网站的根目录
 root: /
 
@@ -104,12 +104,12 @@ indexbtn:
 
 # 首页 banner 中的第二行个人信息配置，留空即不启用
 socialLink:
-  qq: 1333397418               # QQ
-  github: Sitoi                # GitHub
+  qq: 695717815               # QQ
+  github: zhsongdanc                # GitHub
   facebook:                    # Facebook
   twitter:                     # Twitter
   weibo:                       # Weibo
-  email: 133397418@qq.com      # 邮箱
+  email: 695717815@qq.com      # 邮箱
   zhihu:                       # 知乎
   jianshu: 0289c6c3a717        # 简书
   rss: true                    # RSS 订阅 True 启动
@@ -377,7 +377,7 @@ baiduPush: true
 deploy:
   - type: git
     repo:
-      github: https://github.com/crawlmkt/crawlmkt.github.io.git
+      github: git@github.com:zhsongdanc/zhsongdanc.github.io.git
     branch: master
 
 # ------------------------- 博客评论模块配置 -------------------------
