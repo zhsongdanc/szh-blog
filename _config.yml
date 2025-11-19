@@ -376,8 +376,7 @@ baiduPush: true
 # 自动部署配置
 deploy:
   - type: git
-    repo:
-      github: git@github.com:zhsongdanc/zhsongdanc.github.io.git
+    repo: git@github.com:zhsongdanc/zhsongdanc.github.io.git
     branch: master
 
 # ------------------------- 博客评论模块配置 -------------------------
