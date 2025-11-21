@@ -15,17 +15,14 @@ password:
 summary:
 keywords:
 ---
-
 # Spring 事务机制详解
 
 ## 目录
 1. [Spring @Transactional 实现原理](#1-spring-transactional-实现原理)
-2. [Spring AOP 与 AspectJ 的关系](#2-spring-aop-与-aspectj-的关系)
-3. [CGLIB 与 AspectJ 的关系](#3-cglib-与-aspectj-的关系)
-4. [代理类的生成时机](#4-代理类的生成时机)
-5. [事务传播行为详解](#5-事务传播行为详解)
-6. [事务隔离级别](#6-事务隔离级别)
-7. [TransactionInterceptor 实现原理](#7-transactioninterceptor-实现原理)
+2. [Spring AOP 代理机制详解](#2-spring-aop-代理机制详解)
+3. [事务传播行为详解](#3-事务传播行为详解)
+4. [事务隔离级别](#4-事务隔离级别)
+5. [TransactionInterceptor 实现原理](#5-transactioninterceptor-实现原理)
 
 ---
 
@@ -67,9 +64,9 @@ Spring 在启动时扫描 `@Transactional`，由 `TransactionInterceptor` 处理
 
 - **TransactionInterceptor**：核心拦截器，负责方法拦截、事务属性解析、事务管理器调用
 - **PlatformTransactionManager**：事务管理器接口
-  - `DataSourceTransactionManager`（JDBC）
-  - `HibernateTransactionManager`（Hibernate）
-  - `JpaTransactionManager`（JPA）
+    - `DataSourceTransactionManager`（JDBC）
+    - `HibernateTransactionManager`（Hibernate）
+    - `JpaTransactionManager`（JPA）
 - **TransactionAttributeSource**：解析 `@Transactional` 属性
 
 ### 1.4 注意事项
@@ -113,9 +110,11 @@ public class UserService {
 
 ---
 
-## 2. Spring AOP 与 AspectJ 的关系
+## 2. Spring AOP 代理机制详解
 
-### 2.1 核心区别
+### 2.1 Spring AOP 与 AspectJ 的关系
+
+#### 2.1.1 核心区别
 
 **Spring AOP 和 AspectJ 不是同一级别的**，它们是两种不同的 AOP 实现方式：
 
@@ -133,30 +132,30 @@ AOP 实现方式（顶层）
             └── 加载时织入（LTW）
 ```
 
-### 2.2 Spring AOP：运行时动态代理
+#### 2.1.2 Spring AOP：运行时动态代理
 
-#### 实现方式：
+**实现方式**：
 - **JDK 动态代理**：基于接口，使用 `java.lang.reflect.Proxy`
 - **CGLIB 代理**：基于子类继承，运行时生成字节码
 
-#### 特点：
+**特点**：
 - 在运行时生成代理对象
 - 仅支持方法级别的拦截
 - 仅支持 Spring Bean
 
-### 2.3 AspectJ：编译时/加载时织入（不是动态代理）
+#### 2.1.3 AspectJ：编译时/加载时织入（不是动态代理）
 
-#### 织入时机：
+**织入时机**：
 - **编译时织入**：编译时修改字节码
 - **编译后织入**：对已编译的 .class 文件进行织入
 - **加载时织入**：类加载时通过 ClassLoader 织入
 
-#### 特点：
+**特点**：
 - 不是动态代理，而是字节码织入
 - 支持字段、构造器、静态初始化等
 - 支持任意 Java 类
 
-### 2.4 对比总结
+#### 2.1.4 对比总结
 
 | 特性 | Spring AOP | AspectJ |
 |------|-----------|---------|
@@ -167,9 +166,9 @@ AOP 实现方式（顶层）
 | 依赖 | 仅 Spring 容器 | 需要 AspectJ 编译器/Weaver |
 | 限制 | 仅 Spring Bean | 任意 Java 类 |
 
-### 2.5 Spring 中使用 AspectJ 的方式
+#### 2.1.5 Spring 中使用 AspectJ 的方式
 
-#### 方式一：Spring AOP（默认，运行时代理）
+**方式一：Spring AOP（默认，运行时代理）**
 ```java
 // 使用 AspectJ 注解风格，但底层是 Spring AOP
 @Aspect
@@ -185,7 +184,7 @@ public class MyAspect {
 - 运行时动态代理
 - 仅支持 Spring Bean
 
-#### 方式二：AspectJ LTW（加载时织入）
+**方式二：AspectJ LTW（加载时织入）**
 ```java
 // 需要配置 aop.xml
 @Configuration
@@ -198,27 +197,25 @@ public class AspectJConfig {
 - 类加载时织入
 - 支持任意 Java 类
 
----
+### 2.2 CGLIB 与 AspectJ 在 Spring 中的配合
 
-## 3. CGLIB 与 AspectJ 的关系
-
-### 3.1 核心关系总结
+#### 2.2.1 核心关系总结
 
 - **CGLIB 和 AspectJ 是两种不同的技术**，用于不同的目的
 - **Spring AOP 使用 CGLIB 作为代理实现方式之一**
 - **AspectJ 提供切点表达式解析**，Spring AOP 借用其注解风格
 
-### 3.2 CGLIB 是什么
+#### 2.2.2 CGLIB 是什么
 
 CGLIB（Code Generation Library）是一个字节码生成库，用于在运行时生成类的子类。
 
-#### 特点：
+**特点**：
 - 运行时生成代理类（字节码生成）
 - 基于继承（创建目标类的子类）
 - 不需要接口
 - 性能较好（比 JDK 动态代理快）
 
-#### 工作原理：
+**工作原理**：
 ```java
 // 原始类
 public class UserService {
@@ -239,14 +236,14 @@ public class UserService$$EnhancerByCGLIB$$xxx extends UserService {
 }
 ```
 
-### 3.3 AspectJ 是什么
+#### 2.2.3 AspectJ 在 Spring 中的作用
 
-AspectJ 是一个完整的 AOP 框架，提供：
-- 切点表达式语言
-- 字节码织入能力
-- 注解支持（@Aspect, @Before 等）
+AspectJ 在 Spring AOP 中提供：
+- 切点表达式语言（`execution`, `within` 等）
+- 注解支持（`@Aspect`, `@Before`, `@After` 等）
+- 表达式解析器（`aspectjweaver.jar`）
 
-### 3.4 在 Spring 中的关系
+#### 2.2.4 在 Spring 中的完整关系
 
 ```
 Spring AOP
@@ -258,46 +255,21 @@ Spring AOP
         └── CGLIB 代理 (基于继承) ← 这里用到 CGLIB
 ```
 
-### 3.5 代理类命名规则
-
-#### JDK 动态代理
-```java
-$Proxy0
-$Proxy1
-$Proxy2
-...
-```
-
-#### CGLIB 代理
-```java
-// CGLIB 代理生成的类名格式
-原始类名$$EnhancerByCGLIB$$hashcode
-```
-
-#### Spring AOP 使用 CGLIB
-```java
-// Spring AOP 使用 CGLIB 时的类名格式
-原始类名$$EnhancerBySpringCGLIB$$hashcode
-```
-
-### 3.6 总结
-
+**简单记忆**：
 - **AspectJ**：提供语法和解析器（告诉 Spring 切哪里）
 - **CGLIB**：生成代理类（告诉 Spring 怎么切）
 
 两者在 Spring AOP 中配合使用，但职责不同。
 
----
+### 2.3 代理类的生成时机
 
-## 4. 代理类的生成时机
-
-### 4.1 核心答案
+#### 2.3.1 核心答案
 
 **代理类在 Spring 启动时（Bean 创建时）生成，不是在实际调用时生成**
 
-### 4.2 详细流程
+#### 2.3.2 详细流程
 
-#### 阶段1：Spring 启动时（Bean 创建阶段）
+**阶段1：Spring 启动时（Bean 创建阶段）**
 
 ```
 1. 扫描所有 @Component、@Service 等注解的类
@@ -313,7 +285,7 @@ $Proxy2
 6. 将代理对象放入容器
 ```
 
-#### 阶段2：实际调用时（运行时）
+**阶段2：实际调用时（运行时）**
 
 ```
 1. 从容器获取 Bean（已经是代理对象了！）
@@ -325,7 +297,7 @@ $Proxy2
 4. TransactionInterceptor 处理
 ```
 
-### 4.3 完整时序图
+#### 2.3.3 完整时序图
 
 ```
 Spring 启动阶段（Bean 创建时）
@@ -366,20 +338,42 @@ Spring 启动阶段（Bean 创建时）
 └─ 5. 返回结果
 ```
 
-### 4.4 关键点总结
+#### 2.3.4 代理类命名规则
+
+**JDK 动态代理**：
+```java
+$Proxy0
+$Proxy1
+$Proxy2
+...
+```
+
+**CGLIB 代理**：
+```java
+// CGLIB 代理生成的类名格式
+原始类名$$EnhancerByCGLIB$$hashcode
+```
+
+**Spring AOP 使用 CGLIB**：
+```java
+// Spring AOP 使用 CGLIB 时的类名格式
+原始类名$$EnhancerBySpringCGLIB$$hashcode
+```
+
+#### 2.3.5 关键点总结
 
 - **代理对象生成时机**：Spring 启动时（Bean 创建阶段）
 - **不是在调用时生成**：调用时只是使用已存在的代理对象
 - **为什么在启动时生成**：
-  - 性能：避免每次调用都创建代理
-  - 一致性：同一个 Bean 始终使用同一个代理对象
-  - 容器管理：代理对象作为 Bean 被 Spring 管理
+    - 性能：避免每次调用都创建代理
+    - 一致性：同一个 Bean 始终使用同一个代理对象
+    - 容器管理：代理对象作为 Bean 被 Spring 管理
 
 ---
 
-## 5. 事务传播行为详解
+## 3. 事务传播行为详解
 
-### 5.1 最常用的三个传播行为
+### 3.1 最常用的三个传播行为
 
 #### 1. REQUIRED（默认，最常用）
 
@@ -520,7 +514,7 @@ public class BatchService {
 }
 ```
 
-### 5.2 三个传播行为对比
+### 3.2 三个传播行为对比
 
 | 传播行为 | 当前有事务 | 当前无事务 | 回滚影响 | 使用频率 |
 |---------|-----------|-----------|---------|---------|
@@ -528,7 +522,7 @@ public class BatchService {
 | **REQUIRES_NEW** | 挂起，创建新事务 | 创建新事务 | 独立回滚 | ⭐⭐⭐⭐ |
 | **NESTED** | 创建嵌套事务 | 创建新事务 | 可独立回滚 | ⭐⭐⭐ |
 
-### 5.3 REQUIRES_NEW 和 NESTED 的区别
+### 3.3 REQUIRES_NEW 和 NESTED 的区别
 
 #### REQUIRES_NEW：互不影响（完全独立）
 
@@ -554,13 +548,13 @@ public class BatchService {
 
 ---
 
-## 6. 事务隔离级别
+## 4. 事务隔离级别
 
-### 6.1 可以设置不同的隔离级别
+### 4.1 可以设置不同的隔离级别
 
 每个 `@Transactional` 注解都可以独立配置自己的隔离级别，互不影响。
 
-### 6.2 如何设置不同的隔离级别
+### 4.2 如何设置不同的隔离级别
 
 ```java
 @Service
@@ -606,7 +600,7 @@ public class OrderService {
 }
 ```
 
-### 6.3 五种隔离级别
+### 4.3 五种隔离级别
 
 | 隔离级别 | 脏读 | 不可重复读 | 幻读 | 性能 | 使用场景 |
 |---------|------|-----------|------|------|---------|
@@ -615,7 +609,7 @@ public class OrderService {
 | **REPEATABLE_READ** | ✅ 避免 | ✅ 避免 | ❌ 可能 | ⭐⭐⭐ | 需要多次读取一致 |
 | **SERIALIZABLE** | ✅ 避免 | ✅ 避免 | ✅ 避免 | ⭐ | 关键业务、金融操作 |
 
-### 6.4 隔离级别的实现原理
+### 4.4 隔离级别的实现原理
 
 虽然数据库有全局隔离级别，但 Spring 可以在每个事务连接上设置不同的隔离级别：
 
@@ -640,7 +634,7 @@ Spring 事务管理器的工作流程
 - 通过 `Connection.setTransactionIsolation()` 实现
 - 事务结束后连接归还连接池
 
-### 6.5 注意事项
+### 4.5 注意事项
 
 1. **隔离级别不能降级**：内层事务不能使用比外层更低的隔离级别
 2. **数据库支持情况**：不同数据库支持的隔离级别不同
@@ -648,9 +642,9 @@ Spring 事务管理器的工作流程
 
 ---
 
-## 7. TransactionInterceptor 实现原理
+## 5. TransactionInterceptor 实现原理
 
-### 7.1 TransactionInterceptor 入口
+### 5.1 TransactionInterceptor 入口
 
 ```java
 // Spring 源码：TransactionInterceptor
@@ -697,7 +691,7 @@ public class TransactionInterceptor implements MethodInterceptor {
 }
 ```
 
-### 7.2 PlatformTransactionManager 获取事务（处理传播行为）
+### 5.2 PlatformTransactionManager 获取事务（处理传播行为）
 
 ```java
 // Spring 源码：AbstractPlatformTransactionManager
@@ -786,9 +780,9 @@ public abstract class AbstractPlatformTransactionManager
 }
 ```
 
-### 7.3 具体传播行为的实现
+### 5.3 具体传播行为的实现
 
-#### 7.3.1 REQUIRED（默认）的实现
+#### 5.3.1 REQUIRED（默认）的实现
 
 ```java
 // REQUIRED 传播行为的处理逻辑
@@ -809,7 +803,7 @@ private TransactionStatus handleRequired(
 }
 ```
 
-#### 7.3.2 REQUIRES_NEW 的实现
+#### 5.3.2 REQUIRES_NEW 的实现
 
 ```java
 // REQUIRES_NEW 传播行为的处理逻辑
@@ -851,7 +845,7 @@ protected final void resume(Object transaction,
 }
 ```
 
-#### 7.3.3 NESTED 的实现
+#### 5.3.3 NESTED 的实现
 
 ```java
 // NESTED 传播行为的处理逻辑
@@ -914,7 +908,7 @@ protected void doRollbackToSavepoint(Object savepoint) throws TransactionExcepti
 }
 ```
 
-### 7.4 事务提交和回滚的处理
+### 5.4 事务提交和回滚的处理
 
 ```java
 // 提交事务
@@ -947,7 +941,7 @@ public final void commit(TransactionStatus status) throws TransactionException {
 }
 ```
 
-### 7.5 完整执行流程示例
+### 5.5 完整执行流程示例
 
 ```java
 @Service
@@ -991,21 +985,21 @@ public class OrderService {
 }
 ```
 
-### 7.6 关键实现点总结
+### 5.6 关键实现点总结
 
 1. **REQUIRED（默认）**
-   - 有事务：加入当前事务
-   - 无事务：创建新事务
+    - 有事务：加入当前事务
+    - 无事务：创建新事务
 
 2. **REQUIRES_NEW**
-   - 有事务：挂起当前事务 → 创建新事务 → 提交新事务 → 恢复外层事务
-   - 无事务：创建新事务
+    - 有事务：挂起当前事务 → 创建新事务 → 提交新事务 → 恢复外层事务
+    - 无事务：创建新事务
 
 3. **NESTED**
-   - 有事务：创建保存点（Savepoint）→ 失败回滚到保存点，成功释放保存点
-   - 无事务：创建新事务
+    - 有事务：创建保存点（Savepoint）→ 失败回滚到保存点，成功释放保存点
+    - 无事务：创建新事务
 
-### 7.7 核心方法
+### 5.7 核心方法
 
 - `handleExistingTransaction()`：处理已存在事务的情况
 - `suspend()`：挂起事务
