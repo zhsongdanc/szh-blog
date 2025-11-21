@@ -1,21 +1,21 @@
 ---
-abbrlink: 2719
-title: rocketmq探秘
-author: demussong
+title: Java NIO Buffer 使用与实现原理
+author: demus
 top: false
 cover: false
 mathjax: false
 toc: true
-date: 2025-01-17 21:51:12
+abbrlink: 103
+date: 2023-10-08 10:30:07
 categories:
 tags:
-- [分布式中间件]
-  img:
-  coverImg:
-  password:
-  summary:
-  keywords:
+img:
+coverImg:
+password:
+summary:
+keywords:
 ---
+
 📚 微服务容错与流量治理核心机制笔记
 时间：2025年11月20日
 
