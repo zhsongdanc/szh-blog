@@ -1,5 +1,6 @@
 <%
 var audiosJson = JSON.stringify(site.data.musics);
+var musics = site.data.musics || [];
 %>
 
 <link rel="stylesheet" href="<%- theme.jsDelivr.url %><%- theme.libs.css.aplayer %>">
@@ -21,18 +22,90 @@ var audiosJson = JSON.stringify(site.data.musics);
 <script src="<%- theme.jsDelivr.url %><%- theme.libs.js.aplayer %>"></script>
 <script>
     $(function () {
-        new APlayer({
-            container: document.getElementById('aplayer'),
-            fixed: '<%- theme.music.fixed %>' === 'true',
-            autoplay: '<%- theme.music.autoplay %>' === 'true',
-            theme: '<%- theme.music.theme %>',
-            loop: '<%- theme.music.loop %>',
-            order: '<%- theme.music.order %>',
-            preload: '<%- theme.music.preload %>',
-            volume: Number('<%- theme.music.volume %>'),
-            listFolded: '<%- theme.music.listFolded %>' === 'true',
-            listMaxHeight: '<%- theme.music.listMaxHeight %>',
-            audio: JSON.parse('<%- audiosJson %>')
-        });
+        try {
+            var audioList = JSON.parse('<%- audiosJson %>');
+            var finalAudioList = [];
+            var neteaseCount = 0;
+            var loadedCount = 0;
+            
+            // 统计需要从 API 获取的歌曲数量
+            for (var i = 0; i < audioList.length; i++) {
+                if (audioList[i].neteaseId) {
+                    neteaseCount++;
+                } else if (audioList[i].url && !audioList[i].url.includes('music.163.com/outchain/player')) {
+                    finalAudioList.push(audioList[i]);
+                }
+            }
+            
+            // 初始化播放器函数
+            function initPlayer() {
+                if (finalAudioList.length === 0) {
+                    console.warn('没有可用的音频');
+                    return;
+                }
+                
+                new APlayer({
+                    container: document.getElementById('aplayer'),
+                    fixed: '<%- theme.music.fixed %>' === 'true',
+                    autoplay: '<%- theme.music.autoplay %>' === 'true',
+                    theme: '<%- theme.music.theme %>',
+                    loop: '<%- theme.music.loop %>',
+                    order: '<%- theme.music.order %>',
+                    preload: '<%- theme.music.preload %>',
+                    volume: Number('<%- theme.music.volume %>'),
+                    listFolded: '<%- theme.music.listFolded %>' === 'true',
+                    listMaxHeight: '<%- theme.music.listMaxHeight %>',
+                    audio: finalAudioList
+                });
+            }
+            
+            // 如果有网易云音乐 ID，通过 API 获取真实链接
+            if (neteaseCount > 0) {
+                for (var i = 0; i < audioList.length; i++) {
+                    var audio = audioList[i];
+                    if (audio.neteaseId) {
+                        (function(audioItem) {
+                            // 使用 MetingJS 的公开 API
+                            fetch('https://api.i-meto.com/meting/api?server=netease&type=song&id=' + audioItem.neteaseId)
+                                .then(function(response) {
+                                    return response.json();
+                                })
+                                .then(function(data) {
+                                    loadedCount++;
+                                    if (data && data.length > 0 && data[0].url) {
+                                        finalAudioList.push({
+                                            name: data[0].name || audioItem.name,
+                                            artist: data[0].artist || audioItem.artist,
+                                            url: data[0].url,
+                                            cover: data[0].pic || audioItem.cover
+                                        });
+                                    } else {
+                                        // API 返回失败，使用原始信息（可能无法播放）
+                                        console.warn('无法获取歌曲 ' + audioItem.neteaseId + ' 的音频链接');
+                                    }
+                                    
+                                    // 所有请求完成后初始化播放器
+                                    if (loadedCount === neteaseCount) {
+                                        initPlayer();
+                                    }
+                                })
+                                .catch(function(error) {
+                                    loadedCount++;
+                                    console.error('获取网易云音乐链接失败:', error);
+                                    // 请求失败，仍然尝试初始化（可能部分歌曲可用）
+                                    if (loadedCount === neteaseCount) {
+                                        initPlayer();
+                                    }
+                                });
+                        })(audio);
+                    }
+                }
+            } else {
+                // 没有需要 API 获取的歌曲，直接初始化
+                initPlayer();
+            }
+        } catch(e) {
+            console.error('音乐播放器初始化失败:', e);
+        }
     });
 </script>
