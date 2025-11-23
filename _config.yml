@@ -130,7 +130,7 @@ music:
   showTitle: true               # 是否显示标题
   title: 听听音乐                # 标题内容
   fixed: false                  # 开启吸底模式
-  autoplay: true                # 是否自动播放
+  autoplay: false               # 是否自动播放
   theme: '#542674'              # 颜色
   loop: 'all'                   # 音频循环播放, 可选值: 'all', 'one', 'none'
   order: 'list'                 # 音频循环顺序, 可选值: 'list', 'random'
