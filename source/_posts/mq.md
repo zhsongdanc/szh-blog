@@ -1,3 +1,20 @@
+---
+title: Java NIO Buffer 使用与实现原理
+author: demus
+top: false
+cover: false
+mathjax: false
+toc: true
+abbrlink: 106
+date: 2023-10-08 10:30:07
+categories:
+tags:
+img:
+coverImg:
+password:
+summary:
+keywords:
+---
 1. 题目：Kafka 的日志分段（Log Segmentation）机制是什么？如何影响读写性能和数据清理？
 核心考点：日志存储底层设计、性能优化逻辑
 详细答案：
