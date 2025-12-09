@@ -5,4 +5,4 @@ type: "about"
 layout: "about"
 ---
 
-博客模版项目
+模版
