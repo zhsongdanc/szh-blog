@@ -5,14 +5,17 @@ top: false
 cover: false
 mathjax: false
 toc: true
-date: 2025-12-04 10:00:00
-categories: 
+categories:
   - Kafka
 tags:
   - Kafka
   - 事务消息
   - 架构原理
-summary: 深入解析 Kafka 事务机制，从 Exactly-Once 语义出发，详解事务协调器、两阶段提交（2PC）过程、隔离级别以及 Java 实战代码，帮助开发者掌握 Kafka 跨分区原子性写入的核心技术。
+summary: >-
+  深入解析 Kafka 事务机制，从 Exactly-Once 语义出发，详解事务协调器、两阶段提交（2PC）过程、隔离级别以及 Java
+  实战代码，帮助开发者掌握 Kafka 跨分区原子性写入的核心技术。
+abbrlink: 45951
+date: 2025-12-04 10:00:00
 ---
 
 # Kafka 事务消息机制详解

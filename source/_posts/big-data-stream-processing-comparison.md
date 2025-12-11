@@ -1,8 +1,16 @@
 ---
 title: 大数据流处理框架对比：Kafka、Storm、Flink与Spark
+tags:
+  - 大数据
+  - 流处理
+  - Kafka
+  - Storm
+  - Flink
+  - Spark
+categories:
+  - 大数据
+abbrlink: 26135
 date: 2025-12-04 10:00:00
-tags: [大数据, 流处理, Kafka, Storm, Flink, Spark]
-categories: [大数据]
 ---
 
 在构建实时数据处理系统时，我们经常会听到 Kafka、Storm、Flink 和 Spark 这些名词。它们虽然都与"流处理"有关，但在架构定位、处理模型和适用场景上有着显著的区别。本文将通俗易懂地为你解析它们之间的异同。
